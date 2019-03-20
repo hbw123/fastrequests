@@ -1,20 +1,19 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
+
 import asyncio, os
 from cchardet import detect
 from lxml import etree
 import json
-try:
-    import aiohttp
-except ImportError:
-    raise RuntimeError('您没有安装aiohttp，请执行安装命令 pip install aiohttp  ')
+import aiohttp
 
 
 
 reulst=[]
 loop = asyncio.get_event_loop()
-session=aiohttp.ClientSession()
+
 class HighRequest():
     def __init__(self, method, url, timeout=None, session=False, headers=None, cookies=None, unsafe=None,
                  mark='xqq', **kwargs):
@@ -25,16 +24,15 @@ class HighRequest():
         if not session:
             self.sessiondict = (cookies, headers, aiohttp.CookieJar(unsafe=True) if unsafe else None)
 
-async def main(url,method, timeout=None,headers=None, cookies=None, proxy=None,data=None,params=None,session=None):
+async def main(url,method, timeout=None,headers=None, cookies=None, proxy=None,data=None,params=None):
+    async with aiohttp.ClientSession() as client:
         try:
-            async with session.request(url=url,method=method,headers=headers,timeout=timeout,cookies=cookies,proxy=proxy,data=data,params=params) as resp:
-                
+            async with client.request(url=url,method=method,headers=headers,timeout=timeout,cookies=cookies,proxy=proxy,data=data,params=params) as resp:
                 reulst.append(HighResponse(await resp.read(),resp))
         except:
             pass
 def request(url,method,timeout=None,headers=None, cookies=None, proxy=None,data=None,params=None):
     loop.run_until_complete(main(url,method, timeout,headers, cookies, proxy,data,params))
-    session.close()
     return reulst
 
 def requests(urls,method,timeout=None,headers=None, cookies=None, proxy=None,data=None,params=None):
@@ -42,7 +40,6 @@ def requests(urls,method,timeout=None,headers=None, cookies=None, proxy=None,dat
     for url in urls:
         tasks.append(asyncio.ensure_future(main(url,method, timeout,headers, cookies, proxy,data,params)))
     loop.run_until_complete(asyncio.wait(tasks))
-    session.close()
     return reulst
 
 def get(url,timeout=60,headers=None, cookies=None, proxy=None,data=None):
@@ -56,7 +53,6 @@ def post(url, timeout=60,headers=None, cookies=None, proxy=None,data=None):
 def gets(urls,timeout=60,headers=None, cookies=None, proxy=None,data=None):
     requests(urls,'GET',timeout,headers, cookies, proxy,data=None,params=data)
     return reulst
-
 
 class HighResponse():
     def __init__(self, content, clientResponse):
@@ -89,10 +85,10 @@ class HighResponse():
     def text(self, encoding=None):
         encoding = encoding or detect(self.content)['encoding']
         return self.content.decode(encoding=encoding)
- 
+   
     def get_element_for_xpath(self,str):
         return etree.HTML(self.content).xpath(str)[0]
-
+   
     def get_elements_for_xpath(self,str):
         return etree.HTML(self.content).xpath(str)
     @property
@@ -128,5 +124,3 @@ def get_value_by_key(input_json,results, key):
     if key_value != '':
         results.append(key_value)
     return results
-
-
