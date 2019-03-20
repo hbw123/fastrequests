@@ -16,5 +16,5 @@ setup(
     packages = find_packages(),
     include_package_data = True,
     platforms = "any",
-    install_requires = ['aiohttp','cchardet','lxml','uvloop']
+    install_requires = ['aiohttp','cchardet','lxml']
 )
