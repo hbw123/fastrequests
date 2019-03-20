@@ -10,13 +10,7 @@ try:
 except ImportError:
     raise RuntimeError('您没有安装aiohttp，请执行安装命令 pip install aiohttp  ')
 
-if os.name is not 'nt':
-    try:
-        import uvloop
-    except:
-        print('检测到您未安装uvloop, ahttp将使用默认引擎aiohttp作为时间循环。\n鉴于uvloop拥有更快的事件循环速度，请您安装uvloop，安装方法：\npip install uvloop')
-    else:
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
 
 reulst=[]
 loop = asyncio.get_event_loop()
