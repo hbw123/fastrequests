@@ -107,7 +107,7 @@ class HighResponse():
 def get_dict_from_str(param):
     params={}
     for data in param.split('\n'):
-        params.update({data.split(':')[0].strip():data.split(':')[1].strip()})
+        params.update({data.split(':')[0].strip():''.join.(data.split(':')[1:])})
     return params
 
 def get_value_by_key(input_json,results, key):
